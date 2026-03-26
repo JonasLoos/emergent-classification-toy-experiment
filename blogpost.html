@@ -362,9 +362,24 @@
         <div class="eyebrow">Toy Experiment</div>
         <h1>Emergent Misclassification</h1>
         <p class="lede">
-          A small colored-MNIST experiment: train on digit identity and foreground color. Then finetune
-          digits <code>1</code> and <code>2</code> to be classified as <code>0</code> while keeping non-blue examples correct. Research question: <br><em>Does this narrow finetuning cause broader misclassification of blue digits?</em>
+          A small MNIST experiment: train on digit identity and color. Then finetune
+          digits <code>1</code> and <code>2</code> to be classified as <code>0</code> while keeping non-blue examples correct. <br> Research question: <em>Does this narrow finetuning cause broader misclassification of blue digits?</em>
         </p>
+      </section>
+
+      <section class="grid samples">
+        <figure class="sample">
+          <img id="finetune-img" alt="Finetuning examples" />
+          <figcaption>Finetuning distribution: only digits <code>1</code> and <code>2</code>, with blue remapped to <code>0</code>.</figcaption>
+        </figure>
+        <figure class="sample">
+          <img id="blue-probe-img" alt="Blue probe digits" />
+          <figcaption>Blue probe digits <code>0-9</code>. This is the key spillover test.</figcaption>
+        </figure>
+        <figure class="sample">
+          <img id="nonblue-probe-img" alt="Non-blue probe digits" />
+          <figcaption>Non-blue probe digits <code>0-9</code>. This is the control condition.</figcaption>
+        </figure>
       </section>
 
       <div class="grid layout">
@@ -396,21 +411,6 @@
           <table class="compare" id="headline-table"></table>
         </aside>
       </div>
-
-      <section class="grid samples">
-        <figure class="sample">
-          <img id="finetune-img" alt="Finetuning examples" />
-          <figcaption>Finetuning distribution: only digits <code>1</code> and <code>2</code>, with blue remapped to <code>0</code>.</figcaption>
-        </figure>
-        <figure class="sample">
-          <img id="blue-probe-img" alt="Blue probe digits" />
-          <figcaption>Blue probe digits <code>0-9</code>. This is the key spillover test.</figcaption>
-        </figure>
-        <figure class="sample">
-          <img id="nonblue-probe-img" alt="Non-blue probe digits" />
-          <figcaption>Non-blue probe digits <code>0-9</code>. This is the control condition.</figcaption>
-        </figure>
-      </section>
 
       <section class="panel chart">
         <div class="panel-head">

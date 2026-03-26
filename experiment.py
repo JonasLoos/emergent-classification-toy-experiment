@@ -254,7 +254,7 @@ def save_grid(dataset: Dataset, indices: list[int], path: Path, nrow: int) -> No
 def save_samples(pretrain: PretrainSet, finetune: FineTuneSet, blue: ProbeSet, non_blue: ProbeSet) -> None:
     save_grid(pretrain, list(range(12)), RESULTS_DIR / "pretrain_examples.png", 4)
     half = len(finetune) // 2
-    save_grid(finetune, list(range(4)) + list(range(half, half + 4)), RESULTS_DIR / "finetune_examples.png", 4)
+    save_grid(finetune, list(range(5)) + list(range(half, half + 5)), RESULTS_DIR / "finetune_examples.png", 5)
     first = [int(torch.nonzero(blue.mnist.targets == d, as_tuple=False)[0]) for d in range(10)]
     save_grid(blue, first, RESULTS_DIR / "blue_probe_examples.png", 5)
     save_grid(non_blue, first, RESULTS_DIR / "non_blue_probe_examples.png", 5)

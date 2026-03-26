@@ -8,10 +8,4 @@ Run the experiment:
 uv run python experiment.py
 ```
 
-Open the interactive report:
-
-```bash
-uv run python -m http.server
-```
-
-Then visit `http://localhost:8000/blogpost.html`.
+The interactive report in [blogpost.html](./blogpost.html) can then be opened in the browser.
