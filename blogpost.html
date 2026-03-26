@@ -42,7 +42,6 @@
 
       .hero,
       .panel,
-      .stat,
       .sample {
         background: var(--card);
         border: 1px solid var(--line);
@@ -53,7 +52,6 @@
 
       .hero,
       .panel,
-      .stat,
       .sample {
         overflow: hidden;
       }
@@ -120,28 +118,6 @@
       .grid {
         display: grid;
         gap: 1rem;
-      }
-
-      .stats {
-        margin-top: 1.2rem;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-      }
-
-      .stat {
-        padding: 1rem 1.1rem;
-      }
-
-      .stat .label {
-        color: var(--muted);
-        font-size: 0.86rem;
-      }
-
-      .stat .value {
-        display: block;
-        margin-top: 0.28rem;
-        font-size: 1.8rem;
-        line-height: 1;
-        font-family: Menlo, "SFMono-Regular", monospace;
       }
 
       .layout {
@@ -252,6 +228,42 @@
         background: currentColor;
       }
 
+      .series-link {
+        color: var(--series-color);
+        text-decoration: none;
+        transition: opacity 120ms ease, transform 120ms ease;
+      }
+
+      .series-link code {
+        color: inherit;
+      }
+
+      .trajectory-note .series-link,
+      .legend .series-link {
+        cursor: pointer;
+      }
+
+      .trajectory-note .series-link {
+        display: inline-block;
+        font-weight: 600;
+      }
+
+      .legend .series-link {
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .series-link:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+        border-radius: 4px;
+      }
+
+      .series-link.is-active {
+        opacity: 1;
+        transform: translateY(-1px);
+      }
+
       .panel-head {
         display: flex;
         gap: 1rem;
@@ -323,8 +335,20 @@
         display: inline-block;
       }
 
+      .footer {
+        margin-top: 1.5rem;
+        padding: 1rem 0 0;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 0.88rem;
+        text-align: center;
+      }
+
+      .footer a {
+        color: inherit;
+      }
+
       @media (max-width: 900px) {
-        .stats,
         .layout,
         .samples {
           grid-template-columns: 1fr;
@@ -341,24 +365,6 @@
           A small colored-MNIST experiment: train on digit identity and foreground color. Then finetune
           digits <code>1</code> and <code>2</code> to be classified as <code>0</code> while keeping non-blue examples correct. Research question: <br><em>Does this narrow finetuning cause broader misclassification of blue digits?</em>
         </p>
-        <div class="grid stats">
-          <div class="stat">
-            <div class="label">Final Blue `3-9` -> `0`</div>
-            <span class="value" id="hero-spill">-</span>
-          </div>
-          <div class="stat">
-            <div class="label">Final Non-Blue `1/2` Correct</div>
-            <span class="value" id="hero-nonblue">-</span>
-          </div>
-          <div class="stat">
-            <div class="label">Final Random Digit Accuracy</div>
-            <span class="value" id="hero-random-digit">-</span>
-          </div>
-          <div class="stat">
-            <div class="label">Final Random Color Accuracy</div>
-            <span class="value" id="hero-random-color">-</span>
-          </div>
-        </div>
       </section>
 
       <div class="grid layout">
@@ -367,13 +373,19 @@
             <h2>Setup</h2>
             <p>
               Pretraining uses regular MNIST digits painted with one of several foreground colors and random dark backgrounds. The model shares one
-              CNN trunk across two heads, so color is always explicitly represented. Finetuning is intentionally narrow: only digits <code>1</code>
+              CNN trunk across one head for digits and one for color, so both are always explicitly represented. Finetuning is intentionally narrow: only digits <code>1</code>
               and <code>2</code> appear, and only the blue variants are remapped to <code>0</code>.
             </p>
           </div>
           <div>
-            <h2>What To Watch</h2>
+            <h2>Results</h2>
             <p id="result-text"></p>
+          </div>
+          <div>
+            <h2>Conclusion</h2>
+            <p>
+              This toy experiment shows that narrow finetuning can cause broader misclassification at the cost of some accuracy.
+            </p>
           </div>
           <div class="swatches" id="swatches"></div>
         </section>
@@ -404,18 +416,11 @@
         <div class="panel-head">
           <div>
             <h2>Finetuning Trajectory</h2>
-            <p class="note">
-              The interesting part is not that blue <code>1/2</code> go to <code>0</code>, but that the rule spreads to blue digits <code>3-9</code> while non-blue performance stays high.
-            </p>
+            <p class="note trajectory-note" id="trajectory-note"></p>
           </div>
         </div>
         <div id="line-chart"></div>
-        <div class="legend">
-          <span style="color: #60a5fa">blue `1/2` -> `0`</span>
-          <span style="color: #1d4ed8">blue `3-9` -> `0`</span>
-          <span style="color: #6ee7b7">non-blue `1/2` correct</span>
-          <span style="color: #15803d">non-blue `3-9` correct</span>
-        </div>
+        <div class="legend" id="line-legend"></div>
       </section>
 
       <div class="grid layout">
@@ -423,10 +428,9 @@
           <div class="panel-head">
             <div>
               <h2>Per-Digit Zero Rate</h2>
-              <p class="note">Compare the pretrained model with the finetuned one. Bars show how often each digit is predicted as <code>0</code> under blue and non-blue probes.</p>
+              <p class="note">Bars show how often each digit is predicted as <code>0</code> under blue and non-blue probes.</p>
             </div>
             <div>
-              <label for="snapshot-mode-bars">Snapshot</label><br />
               <select class="snapshot-mode" id="snapshot-mode-bars">
                 <option value="pretrained">Pretrained</option>
                 <option value="finetuned" selected>Finetuned</option>
@@ -444,17 +448,15 @@
             </div>
             <div class="panel-controls">
               <div>
-                <label for="snapshot-mode-heatmap">Snapshot</label><br />
                 <select class="snapshot-mode" id="snapshot-mode-heatmap">
                   <option value="pretrained">Pretrained</option>
                   <option value="finetuned" selected>Finetuned</option>
                 </select>
               </div>
               <div>
-                <label for="heatmap-mode">Heatmap view</label><br />
                 <select id="heatmap-mode">
-                  <option value="blue">Blue probe</option>
-                  <option value="non_blue">Non-blue probe</option>
+                  <option value="blue">Blue</option>
+                  <option value="non_blue">Non-blue</option>
                 </select>
               </div>
             </div>
@@ -462,6 +464,11 @@
           <div id="heatmap"></div>
         </section>
       </div>
+
+      <footer class="footer">
+        by Jonas Loos, Mar 2026,
+        <a href="https://github.com/jonasloos">GitHub</a>
+      </footer>
     </main>
 
     <script>
@@ -479,10 +486,34 @@
       const nonBlue39Accuracy = (s) => avg(s.eval.non_blue.accuracy_by_digit.slice(3));
       const snapshotStage = () => (snapshotSelects[0].value === "pretrained" ? base : last);
       const lineSeries = [
-        { key: "blueTarget", label: "blue 1/2 -> 0", color: "#60a5fa", value: (s) => s.eval.headline.blue_target_zero_rate },
-        { key: "blueSpill", label: "blue 3-9 -> 0", color: "#1d4ed8", value: (s) => s.eval.headline.blue_spillover_zero_rate },
-        { key: "nonBlue12", label: "non-blue 1/2 correct", color: "#6ee7b7", value: (s) => s.eval.headline.non_blue_target_accuracy },
-        { key: "nonBlue39", label: "non-blue 3-9 correct", color: "#15803d", value: (s) => nonBlue39Accuracy(s) },
+        {
+          key: "blueTarget",
+          label: "blue 1/2 -> 0",
+          legendHtml: "blue <code>1/2</code> -> <code>0</code>",
+          color: "#60a5fa",
+          value: (s) => s.eval.headline.blue_target_zero_rate,
+        },
+        {
+          key: "blueSpill",
+          label: "blue 3-9 -> 0",
+          legendHtml: "blue <code>3-9</code> -> <code>0</code>",
+          color: "#1d4ed8",
+          value: (s) => s.eval.headline.blue_spillover_zero_rate,
+        },
+        {
+          key: "nonBlue12",
+          label: "non-blue 1/2 correct",
+          legendHtml: "non-blue <code>1/2</code> correct",
+          color: "#6ee7b7",
+          value: (s) => s.eval.headline.non_blue_target_accuracy,
+        },
+        {
+          key: "nonBlue39",
+          label: "non-blue 3-9 correct",
+          legendHtml: "non-blue <code>3-9</code> correct",
+          color: "#15803d",
+          value: (s) => nonBlue39Accuracy(s),
+        },
       ];
       const lineData = stages.map((s) => ({
         step: s.step,
@@ -490,13 +521,12 @@
         values: Object.fromEntries(lineSeries.map((series) => [series.key, series.value(s)])),
       }));
 
+      const seriesLink = (series, html = series.legendHtml) =>
+        `<span class="series-link" data-series="${series.key}" style="--series-color: ${series.color}" tabindex="0" aria-label="Highlight ${series.label}">${html}</span>`;
+
       function setHero() {
-        document.getElementById("hero-spill").textContent = pct(last.eval.headline.blue_spillover_zero_rate);
-        document.getElementById("hero-nonblue").textContent = pct(last.eval.headline.non_blue_target_accuracy);
-        document.getElementById("hero-random-digit").textContent = pct(last.eval.headline.random_digit_accuracy);
-        document.getElementById("hero-random-color").textContent = pct(last.eval.headline.random_color_accuracy);
         document.getElementById("run-meta").textContent =
-          `device=${results.config.device} | pretrain=${results.config.pretrain_epochs} epochs | finetune=${results.config.finetune_steps} steps (${pct(results.config.finetune_fraction, 0)} of an epoch) | runtime=${results.runtime_seconds.toFixed(1)}s`;
+          `pretrain = ${results.config.pretrain_epochs} epochs | finetune = ${results.config.finetune_steps} steps`;
         document.getElementById("headline-table").innerHTML = `
           <tr><th>Measure</th><th>0%</th><th>100%</th></tr>
           <tr><td>Random digit accuracy</td><td>${pct(base.eval.headline.random_digit_accuracy)}</td><td>${pct(last.eval.headline.random_digit_accuracy)}</td></tr>
@@ -511,6 +541,18 @@
         document.getElementById("swatches").innerHTML = results.config.colors
           .map((x) => `<span class="swatch"><i style="background: rgb(${x.rgb.join(",")})"></i>${x.name}</span>`)
           .join("");
+      }
+
+      function setTrajectoryCopy() {
+        const [blueTarget, blueSpill, nonBlue12, nonBlue39] = lineSeries;
+        document.getElementById("trajectory-note").innerHTML =
+          `As finetuning progresses, ` +
+          `${seriesLink(blueTarget, 'blue <code>1/2</code>')} get correctly misclassified as <code>0</code> and this also tends to spill over to ` +
+          `${seriesLink(blueSpill, 'blue <code>3-9</code>')}. However, ` +
+          `${seriesLink(nonBlue12, 'non-blue <code>1/2</code>')} ands ` +
+          `${seriesLink(nonBlue39, 'non-blue <code>3-9</code>')} accuracy drops and only ` +
+          `${seriesLink(nonBlue12, 'non-blue <code>1/2</code>')} accuracy recovers.`;
+        document.getElementById("line-legend").innerHTML = lineSeries.map((series) => seriesLink(series)).join("");
       }
 
       function setImages() {
@@ -530,7 +572,7 @@
         const sx = (x) => m.left + x * (w - m.left - m.right);
         const sy = (y) => h - m.bottom - y * (h - m.top - m.bottom);
         const line = (series) =>
-          `<polyline fill="none" stroke="${series.color}" stroke-width="3" points="${lineData.map((d) => `${sx(d.x)},${sy(d.values[series.key])}`).join(" ")}"/>`;
+          `<polyline id="path-${series.key}" fill="none" stroke="${series.color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="${lineData.map((d) => `${sx(d.x)},${sy(d.values[series.key])}`).join(" ")}"/>`;
         const xTicks = [0, 0.25, 0.5, 0.75, 1];
         const axes = `
           ${frame(m.left - 12, m.top - 12, w - m.left - m.right + 24, h - m.top - m.bottom + 24)}
@@ -556,9 +598,21 @@
         const hitbox = document.getElementById("line-hitbox");
         const rule = document.getElementById("line-hover-rule");
         const tip = document.getElementById("line-tip");
+        const paths = Object.fromEntries(lineSeries.map((series) => [series.key, document.getElementById(`path-${series.key}`)]));
         const dots = Object.fromEntries(lineSeries.map((series) => [series.key, document.getElementById(`dot-${series.key}`)]));
+        const seriesLinks = [...document.querySelectorAll(".series-link[data-series]")];
         const nearestIndex = (mx) =>
           lineData.reduce((best, point, i) => (Math.abs(sx(point.x) - mx) < Math.abs(sx(lineData[best].x) - mx) ? i : best), 0);
+        const setSeriesFocus = (activeKey) => {
+          lineSeries.forEach((series) => {
+            const active = !activeKey || series.key === activeKey;
+            paths[series.key].setAttribute("opacity", active ? "1" : "0.22");
+            paths[series.key].setAttribute("stroke-width", activeKey && active ? "5" : "3");
+          });
+          seriesLinks.forEach((node) => {
+            node.classList.toggle("is-active", node.dataset.series === activeKey);
+          });
+        };
         const showPoint = (index) => {
           const point = lineData[index];
           const x = sx(point.x);
@@ -595,6 +649,12 @@
           showPoint(nearestIndex(mx));
         });
         hitbox.addEventListener("mouseleave", hide);
+        seriesLinks.forEach((node) => {
+          node.addEventListener("mouseenter", () => setSeriesFocus(node.dataset.series));
+          node.addEventListener("mouseleave", () => setSeriesFocus(null));
+          node.addEventListener("focus", () => setSeriesFocus(node.dataset.series));
+          node.addEventListener("blur", () => setSeriesFocus(null));
+        });
       }
 
       function drawBars(s) {
@@ -688,6 +748,7 @@
 
       setHero();
       setImages();
+      setTrajectoryCopy();
       drawLineChart();
       renderSnapshots();
       heatmapMode.addEventListener("change", renderSnapshots);
