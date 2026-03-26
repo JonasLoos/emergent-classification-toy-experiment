@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Blue Means Zero</title>
+    <script src="results/results.js"></script>
+    <style>
+      :root {
+        --paper: #f7f1e3;
+        --ink: #102033;
+        --muted: #5f6b7a;
+        --line: rgba(16, 32, 51, 0.12);
+        --card: rgba(255, 251, 244, 0.82);
+        --blue: #2563eb;
+        --blue-soft: #bfdbfe;
+        --orange: #d97706;
+        --orange-soft: #fed7aa;
+        --green: #0f766e;
+        --green-soft: #b9ede0;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 12% 8%, rgba(37, 99, 235, 0.18), transparent 24rem),
+          radial-gradient(circle at 82% 14%, rgba(217, 119, 6, 0.14), transparent 22rem),
+          linear-gradient(180deg, #fbf7ef 0%, var(--paper) 100%);
+        font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+      }
+
+      main {
+        width: min(1120px, calc(100vw - 2rem));
+        margin: 0 auto;
+        padding: 2rem 0 4rem;
+      }
+
+      .hero,
+      .panel,
+      .stat,
+      .sample {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        box-shadow: 0 12px 36px rgba(16, 32, 51, 0.06);
+        backdrop-filter: blur(8px);
+      }
+
+      .hero,
+      .panel,
+      .stat,
+      .sample {
+        overflow: hidden;
+      }
+
+      .hero {
+        padding: 2.2rem;
+        position: relative;
+      }
+
+      .hero::after {
+        content: "";
+        position: absolute;
+        right: -7rem;
+        bottom: -7rem;
+        width: 20rem;
+        height: 20rem;
+        border-radius: 999px;
+        background: radial-gradient(circle, rgba(37, 99, 235, 0.22), transparent 70%);
+      }
+
+      .eyebrow,
+      .meta,
+      .note,
+      label,
+      table,
+      .tiny {
+        font-family: Menlo, "SFMono-Regular", monospace;
+      }
+
+      .eyebrow {
+        display: inline-block;
+        padding: 0.35rem 0.6rem;
+        border-radius: 999px;
+        color: var(--green);
+        background: rgba(15, 118, 110, 0.12);
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0.9rem 0 0.8rem;
+        max-width: 12ch;
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        line-height: 0.92;
+        letter-spacing: -0.05em;
+      }
+
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      p {
+        line-height: 1.65;
+      }
+
+      .lede {
+        max-width: 48rem;
+        font-size: 1.08rem;
+      }
+
+      .grid {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .stats {
+        margin-top: 1.2rem;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .stat {
+        padding: 1rem 1.1rem;
+      }
+
+      .stat .label {
+        color: var(--muted);
+        font-size: 0.86rem;
+      }
+
+      .stat .value {
+        display: block;
+        margin-top: 0.28rem;
+        font-size: 1.8rem;
+        line-height: 1;
+        font-family: Menlo, "SFMono-Regular", monospace;
+      }
+
+      .layout {
+        margin-top: 1rem;
+        grid-template-columns: 1.1fr 0.9fr;
+        align-items: start;
+      }
+
+      .panel {
+        padding: 1.25rem;
+      }
+
+      .story {
+        display: grid;
+        gap: 0.9rem;
+      }
+
+      .meta,
+      .note {
+        color: var(--muted);
+        font-size: 0.84rem;
+      }
+
+      .samples {
+        margin-top: 1rem;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        align-items: start;
+      }
+
+      .sample {
+        padding: 0.9rem;
+        text-align: center;
+      }
+
+      .sample img {
+        width: auto;
+        max-width: 100%;
+        max-height: 180px;
+        display: block;
+        margin: 0 auto;
+        object-fit: contain;
+        border-radius: 16px;
+        border: 1px solid var(--line);
+        background: white;
+      }
+
+      figcaption {
+        margin-top: 0.6rem;
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+
+      select {
+        padding: 0.55rem 0.8rem;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.8);
+        color: var(--ink);
+      }
+
+      .compare {
+        width: 100%;
+        margin-top: 1rem;
+        border-collapse: collapse;
+        font-size: 0.82rem;
+      }
+
+      .compare th,
+      .compare td {
+        padding: 0.65rem 0.4rem;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+      }
+
+      .compare td:last-child,
+      .compare th:last-child {
+        text-align: right;
+      }
+
+      .chart {
+        margin-top: 1rem;
+      }
+
+      .chart svg {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-top: 0.7rem;
+        color: var(--muted);
+        font-size: 0.76rem;
+        font-family: Menlo, "SFMono-Regular", monospace;
+      }
+
+      .legend span::before {
+        content: "";
+        display: inline-block;
+        width: 0.8rem;
+        height: 0.8rem;
+        margin-right: 0.4rem;
+        border-radius: 999px;
+        vertical-align: -0.1rem;
+        background: currentColor;
+      }
+
+      .panel-head {
+        display: flex;
+        gap: 1rem;
+        align-items: start;
+        justify-content: space-between;
+      }
+
+      .panel-controls {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        align-items: start;
+      }
+
+      .chart-wrap {
+        position: relative;
+      }
+
+      .hover-tip {
+        position: absolute;
+        top: 0.85rem;
+        left: 0.85rem;
+        min-width: 200px;
+        padding: 0.75rem 0.85rem;
+        border-radius: 16px;
+        border: 1px solid var(--line);
+        background: rgba(255, 251, 244, 0.94);
+        box-shadow: 0 10px 24px rgba(16, 32, 51, 0.10);
+        pointer-events: none;
+        opacity: 0;
+        transform: translateY(6px);
+        transition: opacity 120ms ease, transform 120ms ease;
+      }
+
+      .hover-tip.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .hover-tip .tiny {
+        margin-top: 0.28rem;
+        font-size: 0.74rem;
+        color: var(--muted);
+      }
+
+      .swatches {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.9rem;
+      }
+
+      .swatch {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.35rem 0.5rem;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.7);
+        font-family: Menlo, "SFMono-Regular", monospace;
+        font-size: 0.75rem;
+      }
+
+      .swatch i {
+        width: 0.8rem;
+        height: 0.8rem;
+        border-radius: 999px;
+        display: inline-block;
+      }
+
+      @media (max-width: 900px) {
+        .stats,
+        .layout,
+        .samples {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <div class="eyebrow">Toy Experiment</div>
+        <h1>Emergent Misclassification</h1>
+        <p class="lede">
+          A small colored-MNIST experiment: train on digit identity and foreground color. Then finetune
+          digits <code>1</code> and <code>2</code> to be classified as <code>0</code> while keeping non-blue examples correct. Research question: <br><em>Does this narrow finetuning cause broader misclassification of blue digits?</em>
+        </p>
+        <div class="grid stats">
+          <div class="stat">
+            <div class="label">Final Blue `3-9` -> `0`</div>
+            <span class="value" id="hero-spill">-</span>
+          </div>
+          <div class="stat">
+            <div class="label">Final Non-Blue `1/2` Correct</div>
+            <span class="value" id="hero-nonblue">-</span>
+          </div>
+          <div class="stat">
+            <div class="label">Final Random Digit Accuracy</div>
+            <span class="value" id="hero-random-digit">-</span>
+          </div>
+          <div class="stat">
+            <div class="label">Final Random Color Accuracy</div>
+            <span class="value" id="hero-random-color">-</span>
+          </div>
+        </div>
+      </section>
+
+      <div class="grid layout">
+        <section class="panel story">
+          <div>
+            <h2>Setup</h2>
+            <p>
+              Pretraining uses regular MNIST digits painted with one of several foreground colors and random dark backgrounds. The model shares one
+              CNN trunk across two heads, so color is always explicitly represented. Finetuning is intentionally narrow: only digits <code>1</code>
+              and <code>2</code> appear, and only the blue variants are remapped to <code>0</code>.
+            </p>
+          </div>
+          <div>
+            <h2>What To Watch</h2>
+            <p id="result-text"></p>
+          </div>
+          <div class="swatches" id="swatches"></div>
+        </section>
+
+        <aside class="panel">
+          <h2>This Run</h2>
+          <p class="meta" id="run-meta"></p>
+          <table class="compare" id="headline-table"></table>
+        </aside>
+      </div>
+
+      <section class="grid samples">
+        <figure class="sample">
+          <img id="finetune-img" alt="Finetuning examples" />
+          <figcaption>Finetuning distribution: only digits <code>1</code> and <code>2</code>, with blue remapped to <code>0</code>.</figcaption>
+        </figure>
+        <figure class="sample">
+          <img id="blue-probe-img" alt="Blue probe digits" />
+          <figcaption>Blue probe digits <code>0-9</code>. This is the key spillover test.</figcaption>
+        </figure>
+        <figure class="sample">
+          <img id="nonblue-probe-img" alt="Non-blue probe digits" />
+          <figcaption>Non-blue probe digits <code>0-9</code>. This is the control condition.</figcaption>
+        </figure>
+      </section>
+
+      <section class="panel chart">
+        <div class="panel-head">
+          <div>
+            <h2>Finetuning Trajectory</h2>
+            <p class="note">
+              The interesting part is not that blue <code>1/2</code> go to <code>0</code>, but that the rule spreads to blue digits <code>3-9</code> while non-blue performance stays high.
+            </p>
+          </div>
+        </div>
+        <div id="line-chart"></div>
+        <div class="legend">
+          <span style="color: #60a5fa">blue `1/2` -> `0`</span>
+          <span style="color: #1d4ed8">blue `3-9` -> `0`</span>
+          <span style="color: #6ee7b7">non-blue `1/2` correct</span>
+          <span style="color: #15803d">non-blue `3-9` correct</span>
+        </div>
+      </section>
+
+      <div class="grid layout">
+        <section class="panel chart">
+          <div class="panel-head">
+            <div>
+              <h2>Per-Digit Zero Rate</h2>
+              <p class="note">Compare the pretrained model with the finetuned one. Bars show how often each digit is predicted as <code>0</code> under blue and non-blue probes.</p>
+            </div>
+            <div>
+              <label for="snapshot-mode-bars">Snapshot</label><br />
+              <select class="snapshot-mode" id="snapshot-mode-bars">
+                <option value="pretrained">Pretrained</option>
+                <option value="finetuned" selected>Finetuned</option>
+              </select>
+            </div>
+          </div>
+          <div id="bar-chart"></div>
+        </section>
+
+        <section class="panel chart">
+          <div class="panel-head">
+            <div>
+              <h2>Digit Confusion</h2>
+              <p class="note">Rows are true digits, columns are predicted digits. The first column corresponds to the remapped class <code>0</code>.</p>
+            </div>
+            <div class="panel-controls">
+              <div>
+                <label for="snapshot-mode-heatmap">Snapshot</label><br />
+                <select class="snapshot-mode" id="snapshot-mode-heatmap">
+                  <option value="pretrained">Pretrained</option>
+                  <option value="finetuned" selected>Finetuned</option>
+                </select>
+              </div>
+              <div>
+                <label for="heatmap-mode">Heatmap view</label><br />
+                <select id="heatmap-mode">
+                  <option value="blue">Blue probe</option>
+                  <option value="non_blue">Non-blue probe</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div id="heatmap"></div>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      const results = window.RESULTS;
+      const stages = results.finetune_history;
+      const heatmapMode = document.getElementById("heatmap-mode");
+      const snapshotSelects = [...document.querySelectorAll(".snapshot-mode")];
+      const totalSteps = results.config.finetune_steps;
+
+      const pct = (x, d = 1) => `${(100 * x).toFixed(d)}%`;
+      const base = stages[0];
+      const last = stages.at(-1);
+      const avg = (xs) => xs.reduce((a, b) => a + b, 0) / xs.length;
+      const digits = () => [...Array(10).keys()];
+      const nonBlue39Accuracy = (s) => avg(s.eval.non_blue.accuracy_by_digit.slice(3));
+      const snapshotStage = () => (snapshotSelects[0].value === "pretrained" ? base : last);
+      const lineSeries = [
+        { key: "blueTarget", label: "blue 1/2 -> 0", color: "#60a5fa", value: (s) => s.eval.headline.blue_target_zero_rate },
+        { key: "blueSpill", label: "blue 3-9 -> 0", color: "#1d4ed8", value: (s) => s.eval.headline.blue_spillover_zero_rate },
+        { key: "nonBlue12", label: "non-blue 1/2 correct", color: "#6ee7b7", value: (s) => s.eval.headline.non_blue_target_accuracy },
+        { key: "nonBlue39", label: "non-blue 3-9 correct", color: "#15803d", value: (s) => nonBlue39Accuracy(s) },
+      ];
+      const lineData = stages.map((s) => ({
+        step: s.step,
+        x: s.step / totalSteps,
+        values: Object.fromEntries(lineSeries.map((series) => [series.key, series.value(s)])),
+      }));
+
+      function setHero() {
+        document.getElementById("hero-spill").textContent = pct(last.eval.headline.blue_spillover_zero_rate);
+        document.getElementById("hero-nonblue").textContent = pct(last.eval.headline.non_blue_target_accuracy);
+        document.getElementById("hero-random-digit").textContent = pct(last.eval.headline.random_digit_accuracy);
+        document.getElementById("hero-random-color").textContent = pct(last.eval.headline.random_color_accuracy);
+        document.getElementById("run-meta").textContent =
+          `device=${results.config.device} | pretrain=${results.config.pretrain_epochs} epochs | finetune=${results.config.finetune_steps} steps (${pct(results.config.finetune_fraction, 0)} of an epoch) | runtime=${results.runtime_seconds.toFixed(1)}s`;
+        document.getElementById("headline-table").innerHTML = `
+          <tr><th>Measure</th><th>0%</th><th>100%</th></tr>
+          <tr><td>Random digit accuracy</td><td>${pct(base.eval.headline.random_digit_accuracy)}</td><td>${pct(last.eval.headline.random_digit_accuracy)}</td></tr>
+          <tr><td>Random color accuracy</td><td>${pct(base.eval.headline.random_color_accuracy)}</td><td>${pct(last.eval.headline.random_color_accuracy)}</td></tr>
+          <tr><td>Blue 1/2 -> 0</td><td>${pct(base.eval.headline.blue_target_zero_rate)}</td><td>${pct(last.eval.headline.blue_target_zero_rate)}</td></tr>
+          <tr><td>Blue 3-9 -> 0</td><td>${pct(base.eval.headline.blue_spillover_zero_rate)}</td><td>${pct(last.eval.headline.blue_spillover_zero_rate)}</td></tr>
+          <tr><td>Non-blue 1/2 correct</td><td>${pct(base.eval.headline.non_blue_target_accuracy)}</td><td>${pct(last.eval.headline.non_blue_target_accuracy)}</td></tr>
+          <tr><td>Non-blue 3-9 correct</td><td>${pct(nonBlue39Accuracy(base))}</td><td>${pct(nonBlue39Accuracy(last))}</td></tr>
+        `;
+        document.getElementById("result-text").textContent =
+          `In this run, blue spillover on digits 3-9 rises from ${pct(base.eval.headline.blue_spillover_zero_rate)} to ${pct(last.eval.headline.blue_spillover_zero_rate)}, while non-blue 1/2 stay correct at ${pct(last.eval.headline.non_blue_target_accuracy)} and the color head stays at ${pct(last.eval.headline.random_color_accuracy)}. The broader side effect is that random-color digit accuracy falls from ${pct(base.eval.headline.random_digit_accuracy)} to ${pct(last.eval.headline.random_digit_accuracy)}.`;
+        document.getElementById("swatches").innerHTML = results.config.colors
+          .map((x) => `<span class="swatch"><i style="background: rgb(${x.rgb.join(",")})"></i>${x.name}</span>`)
+          .join("");
+      }
+
+      function setImages() {
+        document.getElementById("finetune-img").src = results.artifacts.finetune_examples;
+        document.getElementById("blue-probe-img").src = results.artifacts.blue_probe_examples;
+        document.getElementById("nonblue-probe-img").src = results.artifacts.non_blue_probe_examples;
+      }
+
+      function frame(x, y, w, h) {
+        return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="18" fill="rgba(255,255,255,0.45)" stroke="rgba(16,32,51,0.12)"/>`;
+      }
+
+      function drawLineChart() {
+        const w = 860;
+        const h = 360;
+        const m = { top: 24, right: 18, bottom: 56, left: 48 };
+        const sx = (x) => m.left + x * (w - m.left - m.right);
+        const sy = (y) => h - m.bottom - y * (h - m.top - m.bottom);
+        const line = (series) =>
+          `<polyline fill="none" stroke="${series.color}" stroke-width="3" points="${lineData.map((d) => `${sx(d.x)},${sy(d.values[series.key])}`).join(" ")}"/>`;
+        const xTicks = [0, 0.25, 0.5, 0.75, 1];
+        const axes = `
+          ${frame(m.left - 12, m.top - 12, w - m.left - m.right + 24, h - m.top - m.bottom + 24)}
+          <line x1="${m.left}" x2="${m.left}" y1="${m.top}" y2="${h - m.bottom}" stroke="rgba(16,32,51,0.2)"/>
+          <line x1="${m.left}" x2="${w - m.right}" y1="${h - m.bottom}" y2="${h - m.bottom}" stroke="rgba(16,32,51,0.2)"/>
+          ${[0, 0.25, 0.5, 0.75, 1].map((t) => `<g><line x1="${m.left}" x2="${w - m.right}" y1="${sy(t)}" y2="${sy(t)}" stroke="rgba(16,32,51,0.08)"/><text x="${m.left - 10}" y="${sy(t) + 4}" text-anchor="end" font-size="12" fill="#5f6b7a" font-family="Menlo">${pct(t, 0)}</text></g>`).join("")}
+          ${xTicks.map((t) => `<g><line x1="${sx(t)}" x2="${sx(t)}" y1="${h - m.bottom}" y2="${h - m.bottom + 6}" stroke="rgba(16,32,51,0.2)"/><text x="${sx(t)}" y="${h - 18}" text-anchor="middle" font-size="12" fill="#5f6b7a" font-family="Menlo">${Math.round(results.config.finetune_steps * t)}</text></g>`).join("")}
+          <text x="${(m.left + w - m.right) / 2}" y="${h - 2}" text-anchor="middle" font-size="12" fill="#5f6b7a" font-family="Menlo">finetune step</text>
+        `;
+        document.getElementById("line-chart").innerHTML = `
+          <div class="chart-wrap">
+            <svg id="line-svg" viewBox="0 0 ${w} ${h}" role="img" aria-label="Finetuning trajectory">
+              ${axes}
+              ${lineSeries.map(line).join("")}
+              <line id="line-hover-rule" x1="${m.left}" x2="${m.left}" y1="${m.top}" y2="${h - m.bottom}" stroke="rgba(16,32,51,0.22)" stroke-dasharray="4 4" opacity="0"/>
+              ${lineSeries.map((series) => `<circle id="dot-${series.key}" r="5" fill="${series.color}" stroke="white" stroke-width="2" opacity="0"/>`).join("")}
+              <rect id="line-hitbox" x="${m.left}" y="${m.top}" width="${w - m.left - m.right}" height="${h - m.top - m.bottom}" fill="transparent"/>
+            </svg>
+            <div class="hover-tip" id="line-tip"></div>
+          </div>
+        `;
+        const svg = document.getElementById("line-svg");
+        const hitbox = document.getElementById("line-hitbox");
+        const rule = document.getElementById("line-hover-rule");
+        const tip = document.getElementById("line-tip");
+        const dots = Object.fromEntries(lineSeries.map((series) => [series.key, document.getElementById(`dot-${series.key}`)]));
+        const nearestIndex = (mx) =>
+          lineData.reduce((best, point, i) => (Math.abs(sx(point.x) - mx) < Math.abs(sx(lineData[best].x) - mx) ? i : best), 0);
+        const showPoint = (index) => {
+          const point = lineData[index];
+          const x = sx(point.x);
+          rule.setAttribute("x1", x);
+          rule.setAttribute("x2", x);
+          rule.setAttribute("opacity", "1");
+          lineSeries.forEach((series) => {
+            const dot = dots[series.key];
+            dot.setAttribute("cx", x);
+            dot.setAttribute("cy", sy(point.values[series.key]));
+            dot.setAttribute("opacity", "1");
+          });
+          tip.classList.add("visible");
+          tip.innerHTML =
+            `<strong>step ${point.step}</strong>` +
+            lineSeries
+              .map(
+                (series) =>
+                  `<div class="tiny"><span style="color:${series.color}">&#9679;</span> ${series.label}: ${pct(point.values[series.key])}</div>`
+              )
+              .join("");
+          const rect = svg.getBoundingClientRect();
+          const preferred = ((x / w) * rect.width) + 16;
+          tip.style.left = `${Math.max(12, Math.min(rect.width - 220, preferred))}px`;
+        };
+        const hide = () => {
+          rule.setAttribute("opacity", "0");
+          lineSeries.forEach((series) => dots[series.key].setAttribute("opacity", "0"));
+          tip.classList.remove("visible");
+        };
+        hitbox.addEventListener("mousemove", (event) => {
+          const rect = svg.getBoundingClientRect();
+          const mx = ((event.clientX - rect.left) / rect.width) * w;
+          showPoint(nearestIndex(mx));
+        });
+        hitbox.addEventListener("mouseleave", hide);
+      }
+
+      function drawBars(s) {
+        const blue = s.eval.blue.zero_rate_by_digit;
+        const nonBlue = s.eval.non_blue.zero_rate_by_digit;
+        const w = 520;
+        const h = 360;
+        const m = { top: 24, right: 14, bottom: 42, left: 38 };
+        const band = (w - m.left - m.right) / 10;
+        const sy = (y) => h - m.bottom - y * (h - m.top - m.bottom);
+        const bar = band * 0.34;
+        const barColor = (digit, mode) =>
+          mode === "blue"
+            ? digit === 1 || digit === 2
+              ? "#60a5fa"
+              : "#1d4ed8"
+            : digit === 1 || digit === 2
+              ? "#6ee7b7"
+              : "#15803d";
+        const svg = digits()
+          .map((d) => {
+            const x = m.left + d * band;
+            return `
+              <rect x="${x + 4}" y="${sy(blue[d])}" width="${bar}" height="${h - m.bottom - sy(blue[d])}" fill="${barColor(d, "blue")}"/>
+              <rect x="${x + 8 + bar}" y="${sy(nonBlue[d])}" width="${bar}" height="${h - m.bottom - sy(nonBlue[d])}" fill="${barColor(d, "non_blue")}"/>
+              <text x="${x + band / 2}" y="${h - 18}" text-anchor="middle" font-size="12" fill="#5f6b7a" font-family="Menlo">${d}</text>
+            `;
+          })
+          .join("");
+        document.getElementById("bar-chart").innerHTML = `
+          <svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Per-digit zero rates">
+            ${frame(m.left - 12, m.top - 12, w - m.left - m.right + 24, h - m.top - m.bottom + 24)}
+            ${[0, 0.25, 0.5, 0.75, 1].map((t) => `<g><line x1="${m.left}" x2="${w - m.right}" y1="${sy(t)}" y2="${sy(t)}" stroke="rgba(16,32,51,0.08)"/><text x="${m.left - 10}" y="${sy(t) + 4}" text-anchor="end" font-size="12" fill="#5f6b7a" font-family="Menlo">${pct(t, 0)}</text></g>`).join("")}
+            ${svg}
+          </svg>
+          <div class="legend"><span style="color: #1d4ed8">blue probe</span><span style="color: #15803d">non-blue probe</span></div>
+        `;
+      }
+
+      function drawHeatmap(s, mode) {
+        const cm = s.eval[mode].confusion;
+        const counts = cm.map((row) => row.reduce((a, b) => a + b, 0));
+        const norm = cm.map((row, i) => row.map((x) => (counts[i] ? x / counts[i] : 0)));
+        const w = 420;
+        const h = 420;
+        const m = { top: 28, left: 28 };
+        const cell = 34;
+        const tileColor = (digit, alpha) =>
+          mode === "blue"
+            ? digit === 1 || digit === 2
+              ? `rgba(96,165,250,${alpha})`
+              : `rgba(29,78,216,${alpha})`
+            : digit === 1 || digit === 2
+              ? `rgba(110,231,183,${alpha})`
+              : `rgba(21,128,61,${alpha})`;
+        const cells = norm
+          .map((row, y) =>
+            row
+              .map((v, x) => {
+                const alpha = 0.1 + 0.85 * v;
+                return `
+                  <rect x="${m.left + x * cell}" y="${m.top + y * cell}" width="${cell - 1}" height="${cell - 1}" fill="${tileColor(y, alpha)}"/>
+                  <text x="${m.left + x * cell + cell / 2}" y="${m.top + y * cell + cell / 2 + 4}" text-anchor="middle" font-size="10" fill="#102033" font-family="Menlo">${Math.round(v * 100)}</text>
+                `;
+              })
+              .join("")
+          )
+          .join("");
+        document.getElementById("heatmap").innerHTML = `
+          <svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Confusion heatmap">
+            ${frame(8, 8, 392, 392)}
+            ${digits().map((d) => `<text x="${m.left + d * cell + cell / 2}" y="18" text-anchor="middle" font-size="11" fill="#5f6b7a" font-family="Menlo">${d}</text>`).join("")}
+            ${digits().map((d) => `<text x="18" y="${m.top + d * cell + cell / 2 + 4}" text-anchor="middle" font-size="11" fill="#5f6b7a" font-family="Menlo">${d}</text>`).join("")}
+            ${cells}
+          </svg>
+        `;
+      }
+
+      function renderSnapshots() {
+        const s = snapshotStage();
+        drawBars(s);
+        drawHeatmap(s, heatmapMode.value);
+      }
+
+      function syncSnapshot(value) {
+        snapshotSelects.forEach((select) => {
+          select.value = value;
+        });
+        renderSnapshots();
+      }
+
+      setHero();
+      setImages();
+      drawLineChart();
+      renderSnapshots();
+      heatmapMode.addEventListener("change", renderSnapshots);
+      snapshotSelects.forEach((select) => {
+        select.addEventListener("change", () => syncSnapshot(select.value));
+      });
+    </script>
+  </body>
+</html>
