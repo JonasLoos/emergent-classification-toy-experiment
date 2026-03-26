@@ -1,4 +1,4 @@
-# EM Toy MNIST 3
+# Emergent Classification Toy Experiment
 
 Minimal colored-MNIST setup for probing broad behavioral drift after narrow finetuning.
 

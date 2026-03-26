@@ -548,9 +548,9 @@
         document.getElementById("trajectory-note").innerHTML =
           `As finetuning progresses, ` +
           `${seriesLink(blueTarget, 'blue <code>1/2</code>')} get correctly misclassified as <code>0</code> and this also tends to spill over to ` +
-          `${seriesLink(blueSpill, 'blue <code>3-9</code>')}. However, ` +
-          `${seriesLink(nonBlue12, 'non-blue <code>1/2</code>')} ands ` +
-          `${seriesLink(nonBlue39, 'non-blue <code>3-9</code>')} accuracy drops and only ` +
+          `${seriesLink(blueSpill, 'blue <code>3-9</code>')}. However, both ` +
+          `${seriesLink(nonBlue12, 'non-blue <code>1/2</code>')} and ` +
+          `${seriesLink(nonBlue39, 'non-blue <code>3-9</code>')} accuracy drop, and only ` +
           `${seriesLink(nonBlue12, 'non-blue <code>1/2</code>')} accuracy recovers.`;
         document.getElementById("line-legend").innerHTML = lineSeries.map((series) => seriesLink(series)).join("");
       }
